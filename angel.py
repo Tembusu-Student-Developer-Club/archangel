@@ -27,7 +27,8 @@ import time
 import random
 import logging
 import datetime
-# # FROMS
+import yaml
+# FROMS
 from models import Player
 from arrange import angel_mortal_arrange
 
@@ -37,8 +38,6 @@ logging.basicConfig(
     filemode='w',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
-
-
 
 
 # GLOBALS
@@ -53,8 +52,6 @@ GENDER_NOPREF = "no preference"
 GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0 #100 if you wanna change all players with no gender pre to have genderpref = opposite gender, 0 if you wanna all to remain as no geneder pref
 
 
-
-
 def read_csv(filename):
     person_list = []
     with open(filename, 'r') as csv_file:
@@ -66,41 +63,44 @@ def read_csv(filename):
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
-                playerUsername=row[0].strip().lower()
-                playerName=row[1].strip().lower()
-                genderPref = row[2].strip().lower()
-                genderPlayer = row[3].strip().lower()
-                interests = row[4].strip()
-                twotruthsonelie = row[5].strip()
-                introduction = row[6].strip()
-                houseNumber = row[7].strip().lower()
-                CGnumber = row[8].strip().lower()
-                yearofStudy = row[9].strip().lower()
-                faculty = row[10].strip().lower()
-
-                new_person = Player(username = playerUsername,
-                    playername = playerName,
-                    genderpref=genderPref,
-                    genderplayer=genderPlayer,
-                    interests=interests,
-                    twotruthsonelie=twotruthsonelie,
-                    introduction=introduction,
-                    housenumber = houseNumber,
-                    cgnumber = CGnumber,
-                    yearofstudy = yearofStudy,
-                    faculty = faculty,
-                    )
+                new_person = convert_to_player(row)
                 person_list.append(new_person)
                 logger.info(f'Adding ' + str(new_person))
                 print(f'Adding ' + str(new_person))
                 line_count += 1
-        print (f'Processed {line_count} lines.')
-        logger.info(f'Processed {line_count} lines.')
+        print(f'Processed {line_count} players.')
+        logger.info(f'Processed {line_count} players.')
         logger.info(f'person_list has been processed successfully')
     return person_list
 
 
+def convert_to_player(row):
+    config_file = open("config.yml", 'r')
+    index_dict = yaml.full_load(config_file)["player_attribute_index"]
 
+    player_username = row[index_dict["telegram_username"]].strip().lower()
+    player_name = row[index_dict["name"]].strip().lower()
+    gender_pref = row[index_dict["gender_pref"]].strip().lower()
+    gender_player = row[index_dict["gender"]].strip().lower()
+    interests = row[index_dict["interests"]].strip()
+    two_truths_one_lie = row[index_dict["two_truths_one_lie"]].strip()
+    introduction = row[index_dict["introduction"]].strip()
+    house_number = row[index_dict["house_number"]].strip().lower()
+    cg_number = row[index_dict["cg_number"]].strip().lower()
+    year_of_study = row[index_dict["year_of_study"]].strip().lower()
+    faculty = row[index_dict["faculty"]].strip().lower()
+
+    return Player(username=player_username,
+                  playername=player_name,
+                  genderpref=gender_pref,
+                  genderplayer=gender_player,
+                  interests=interests,
+                  twotruthsonelie=two_truths_one_lie,
+                  introduction=introduction,
+                  housenumber=house_number,
+                  cgnumber=cg_number,
+                  yearofstudy=year_of_study,
+                  faculty=faculty,)
 
 
 def separate_players(player_list):
@@ -127,7 +127,7 @@ def separate_players(player_list):
             male_female_list.append(player)
             print(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
             logger.info(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
-    return (male_male_list, male_female_list, female_female_list)
+    return male_male_list, male_female_list, female_female_list
 
 
 '''
@@ -154,10 +154,10 @@ def modify_player_list(player_list):
         if player.genderpref == GENDER_NOPREF:
             random_change_preference = random.random() < GENDER_SWAP_PREFERENCE_PERCENTAGE
             if player.genderplayer == GENDER_MALE and random_change_preference:
-                print (f"Male -> Female")
+                print(f"Male -> Female")
                 player.genderpref = GENDER_FEMALE
             elif player.genderplayer == GENDER_FEMALE and random_change_preference:
-                print (f"Female -> Male")
+                print(f"Female -> Male")
                 player.genderpref = GENDER_MALE
 
 
@@ -167,7 +167,7 @@ def write_to_csv(index, name01, *player_lists):
     '''
     for player_list in player_lists:
         if player_list is not None:
-            print (f"Length of list: {len(player_list)}")
+            print(f"Length of list: {len(player_list)}")
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
             with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f: ##In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
                 writer = csv.writer(f, delimiter=',')
@@ -194,20 +194,22 @@ def write_to_csv(index, name01, *player_lists):
 
                     f.write(player.to_csv_row())
                     f.write("\n")
-            # # write the first player again to close the loop
-            #     f.write(player_list[0].to_csv_row())
-            #     f.write("\n")
+            # write the first player again to close the loop
+                f.write(player_list[0].to_csv_row())
+                f.write("\n")
                 f.close()
 
-def Difference_operator_lists(li1, li2):  ##Used to find out the rejected players
+
+def difference_operator_lists(li1, li2):  ##Used to find out the rejected players
     return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
 
+
 if __name__ == "__main__":
-    print (f"\n\n")
-    print (f"=============================================")
-    print (f"tAngel 2021 engine initializing..............")
-    print (f"=============================================")
-    print (f"\n\n")
+    print(f"\n\n")
+    print(f"=============================================")
+    print(f"tAngel 2021 engine initializing..............")
+    print(f"=============================================")
+    print(f"\n\n")
 
     # Get list of Player objects from csv file
     player_list = read_csv(PLAYERFILE)
@@ -220,7 +222,7 @@ if __name__ == "__main__":
     for index, player_chain in enumerate(list_of_player_chains):
         write_to_csv(index, "accepted", player_chain)
         # creating csv list of rejected players
-        rejected_players_list = Difference_operator_lists(player_list, player_chain)
+        rejected_players_list = difference_operator_lists(player_list, player_chain)
         if len(rejected_players_list) == 0:
             print("rejected players list is empty")
         else:

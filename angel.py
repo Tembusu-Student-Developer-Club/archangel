@@ -169,38 +169,38 @@ def write_to_csv(index, name01, *player_lists):
         if player_list is not None:
             print(f"Length of list: {len(player_list)}")
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
-            with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f: ##In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
+            with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f: # In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
                 writer = csv.writer(f, delimiter=',')
-                header = ['Telegram Username','Name','GenderPref','Gender','Interests','2truths1lie','Intro','House','CG','Year','Faculty'] ##add header to output csv file
+                header = ['Telegram Username','Name','GenderPref','Gender','Interests','2truths1lie','Intro','House','CG','Year','Faculty'] # add header to output csv file
                 writer.writerow(i for i in header)
                 for player in player_list:
                     if '\n' in player.twotruthsonelie:
                         string1 = player.twotruthsonelie
-                        string2 = string1.replace('"', "'")  ##JUST IN CASE PEOPLE TYPE " which can screw up a csv file
-                        string3 = ''.join(('"', string2,'"'))  ##Double quotations are what CSV uses to keep track of newlines within the same cell
+                        string2 = string1.replace('"', "'")  # JUST IN CASE PEOPLE TYPE " which can screw up a csv file
+                        string3 = ''.join(('"', string2,'"'))  # Double quotations are what CSV uses to keep track of newlines within the same cell
                         player.twotruthsonelie = string3
 
                     if '\n' in player.interests:
                         string11 = player.interests
-                        string12 = string11.replace('"', "")  ##JUST IN CASE PEOPLE TYPE " which can screw up a csv file
-                        string13 = ''.join(('"', string12,'"'))  ##Double quotations are what CSV uses to keep track of newlines within the same cell
+                        string12 = string11.replace('"', "")  # JUST IN CASE PEOPLE TYPE " which can screw up a csv file
+                        string13 = ''.join(('"', string12,'"'))  # Double quotations are what CSV uses to keep track of newlines within the same cell
                         player.interests = string13
 
                     if '\n' in player.introduction:
                         string21 = player.introduction
-                        string22 = string21.replace('"',"'")  ##JUST IN CASE PEOPLE TYPE " which can screw up a csv file
-                        string23 = ''.join(('"', string22,'"'))  ##Double quotations are what CSV uses to keep track of newlines within the same cell
+                        string22 = string21.replace('"',"'")  # JUST IN CASE PEOPLE TYPE " which can screw up a csv file
+                        string23 = ''.join(('"', string22,'"'))  # Double quotations are what CSV uses to keep track of newlines within the same cell
                         player.introduction = string23
 
                     f.write(player.to_csv_row())
                     f.write("\n")
             # write the first player again to close the loop
-                f.write(player_list[0].to_csv_row())
-                f.write("\n")
+            #     f.write(player_list[0].to_csv_row())
+            #     f.write("\n")
                 f.close()
 
 
-def difference_operator_lists(li1, li2):  ##Used to find out the rejected players
+def difference_operator_lists(li1, li2):  # Used to find out the rejected players
     return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
 
 

@@ -78,17 +78,26 @@ def convert_to_player(row):
     config_file = open("config.yml", 'r')
     index_dict = yaml.full_load(config_file)["player_attribute_index"]
 
-    player_username = row[index_dict["telegram_username"]].strip().lower()
-    player_name = row[index_dict["name"]].strip().lower()
-    gender_pref = row[index_dict["gender_pref"]].strip().lower()
-    gender_player = row[index_dict["gender"]].strip().lower()
-    interests = row[index_dict["interests"]].strip()
-    two_truths_one_lie = row[index_dict["two_truths_one_lie"]].strip()
-    introduction = row[index_dict["introduction"]].strip()
-    house_number = row[index_dict["house_number"]].strip().lower()
-    cg_number = row[index_dict["cg_number"]].strip().lower()
-    year_of_study = row[index_dict["year_of_study"]].strip().lower()
-    faculty = row[index_dict["faculty"]].strip().lower()
+    try:
+        player_username = row[index_dict["telegram_username"]].strip().lower()
+        player_name = row[index_dict["name"]].strip().lower()
+        gender_pref = row[index_dict["gender_pref"]].strip().lower()
+        gender_player = row[index_dict["gender"]].strip().lower()
+        interests = row[index_dict["interests"]].strip()
+        two_truths_one_lie = row[index_dict["two_truths_one_lie"]].strip()
+        introduction = row[index_dict["introduction"]].strip()
+        house_number = row[index_dict["house_number"]].strip().lower()
+        cg_number = row[index_dict["cg_number"]].strip().lower()
+        year_of_study = row[index_dict["year_of_study"]].strip().lower()
+        faculty = row[index_dict["faculty"]].strip().lower()
+    except KeyError as e:
+        print("WARNING: Key in player_attribute_index of config.yml should not be changed. Key used here should match "
+              "those in the config.yml dictionary.")
+        exit()
+    except IndexError as e:
+        print("Index value in player_attribute_index of config.yml is not within range of given playlist.csv. Pls "
+              "check if columns correspond to their respective indexes.")
+        exit()
 
     return Player(username=player_username,
                   playername=player_name,

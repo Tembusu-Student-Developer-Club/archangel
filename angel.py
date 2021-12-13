@@ -30,30 +30,19 @@ import datetime
 # # FROMS
 from models import Player
 from arrange import angel_mortal_arrange
+from constants import * # can change to import constants but will need to redo references
 
 logger = logging.getLogger(__name__)
+'''
 logging.basicConfig(
     filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
     filemode='w',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
-
-
-
+'''
 
 # GLOBALS
 PLAYERFILE = "playerlist.csv"
-
-# Constants
-GENDER_MALE = "male"
-GENDER_FEMALE = "female"
-GENDER_NONBINARY = "non-binary"
-GENDER_NOPREF = "no preference"
-
-GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0 #100 if you wanna change all players with no gender pre to have genderpref = opposite gender, 0 if you wanna all to remain as no geneder pref
-
-
-
 
 def read_csv(filename):
     person_list = []

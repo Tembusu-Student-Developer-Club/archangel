@@ -133,14 +133,14 @@ def separate_players(player_list):
 '''
 savegenderlist is unused
 '''
-def savegenderlist(genderlist: list):
-    temp = []
-    for k, v in players.items():
-        temp[k] = v.genderplayer
-        temp[k] = v.genderpref
-
-    with open(genderlist.json, 'w+') as f:
-        json.dump(temp, f)
+# def savegenderlist(genderlist: list):
+#     temp = []
+#     for k, v in players.items():
+#         temp[k] = v.genderplayer
+#         temp[k] = v.genderpref
+#
+#     with open(genderlist.json, 'w+') as f:
+#         json.dump(temp, f)
 
 playerList = read_csv("playerlist.csv")
 

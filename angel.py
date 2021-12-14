@@ -28,10 +28,15 @@ import random
 import logging
 import datetime
 import yaml
+import os
+
 # FROMS
 from models import Player
 from arrange import angel_mortal_arrange
 
+# Instantiate Logger
+if not os.path.exists('logs'):
+    os.makedirs('logs')
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',

@@ -1,24 +1,16 @@
+# IMPORTS
+import networkx as nx
+import time
+import random
+
 # FROMS
-from models import Player
+from MyLogger import MyLogger
 from graph import get_graph_from_edges, draw_graph, get_full_cycles_from_graph,\
     full_cycle_to_edges, get_one_full_cycle, convert_full_cycle_to_graph,\
     get_one_full_cycle_from_graph, get_hamiltonian_path_from_graph,\
     is_there_definitely_no_hamiltonian_cycle, hamilton
-
-import datetime
-import logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
-    filemode='w',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
-import networkx as nx
-import time
-import random
-# from random import shuffle
 from random import randint
+
 
 # Constants
 GENDER_MALE = "male"
@@ -41,6 +33,9 @@ RELAX_NO_SAME_HOUSE_REQUIREMENT_PERCENTAGE = 0.35
 RELAX_NO_SAME_CG_REQUIREMENT_PERCENTAGE = 0.00
 
 # RELAX_NO_SAME_FACULTY_REQUIREMENT_PERCENTAGE = 0.00 #not used
+
+# Get Logger
+logger = MyLogger()
 
 
 def get_house_from_player(player):

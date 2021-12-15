@@ -3,16 +3,6 @@ import matplotlib.pyplot as plt
 from random import sample
 from networkx.algorithms.tournament import hamiltonian_path
 
-# import datetime
-# import logging
-# logger = logging.getLogger(__name__)
-# logging.basicConfig(
-#     filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
-#     filemode='w',
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-# )
-
-
 def draw_graph(G, labels=None, graph_layout='spring',
                node_size=1600, node_color='blue', node_alpha=0.3,
                node_text_size=9,

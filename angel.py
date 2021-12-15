@@ -28,15 +28,11 @@ import random
 import logging
 import datetime
 import yaml
-import os
 
 # FROMS
 from models import Player
 from arrange import angel_mortal_arrange
 
-# Instantiate Logger
-if not os.path.exists('logs'):
-    os.makedirs('logs')
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
@@ -59,31 +55,37 @@ GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0 #100 if you wanna change all players wit
 
 def read_csv(filename):
     person_list = []
-    with open(filename, 'r') as csv_file:
+
+    try:
+        csv_file = open(filename, 'r')
         csv_reader = csv.reader(csv_file, delimiter=',')
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                logger.info(f'Column names are {", ".join(row)}')
-                print(f'Column names are {", ".join(row)}')
-                line_count += 1
-            else:
-                new_person = convert_to_player(row)
-                person_list.append(new_person)
-                logger.info(f'Adding ' + str(new_person))
-                print(f'Adding ' + str(new_person))
-                line_count += 1
-        print(f'Processed {line_count} players.')
-        logger.info(f'Processed {line_count} players.')
-        logger.info(f'person_list has been processed successfully')
+    except FileNotFoundError as e:
+        print("WARNING: playerlist.csv file does not exist or is incorrectly named.")
+        exit()
+
+    line_count = 0
+    for row in csv_reader:
+        if line_count == 0:
+            logger.info(f'Column names are {", ".join(row)}')
+            print(f'Column names are {", ".join(row)}')
+            line_count += 1
+        else:
+            new_person = convert_to_player(row)
+            person_list.append(new_person)
+            logger.info(f'Adding ' + str(new_person))
+            print(f'Adding ' + str(new_person))
+            line_count += 1
+    print(f'Processed {line_count} players.')
+    logger.info(f'Processed {line_count} players.')
+    logger.info(f'person_list has been processed successfully')
     return person_list
 
 
 def convert_to_player(row):
-    config_file = open("config.yml", 'r')
-    index_dict = yaml.full_load(config_file)["player_attribute_index"]
-
     try:
+        config_file = open("config.yml", 'r')
+        index_dict = yaml.full_load(config_file)["player_attribute_index"]
+
         player_username = row[index_dict["telegram_username"]].strip().lower()
         player_name = row[index_dict["name"]].strip().lower()
         gender_pref = row[index_dict["gender_pref"]].strip().lower()
@@ -95,13 +97,16 @@ def convert_to_player(row):
         cg_number = row[index_dict["cg_number"]].strip().lower()
         year_of_study = row[index_dict["year_of_study"]].strip().lower()
         faculty = row[index_dict["faculty"]].strip().lower()
+    except FileNotFoundError as e:
+        print("WARNING: Config file is named incorrectly or does not exist.")
+        exit()
     except KeyError as e:
         print("WARNING: Key in player_attribute_index of config.yml should not be changed. Key used here should match "
               "those in the config.yml dictionary.")
         exit()
     except IndexError as e:
-        print("Index value in player_attribute_index of config.yml is not within range of given playlist.csv. Pls "
-              "check if columns correspond to their respective indexes.")
+        print("WARNING: Index value in player_attribute_index of config.yml is not within range of given playlist.csv."
+              " Pls check if columns correspond to their respective indexes.")
         exit()
 
     return Player(username=player_username,

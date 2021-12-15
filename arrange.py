@@ -8,13 +8,11 @@ from graph import get_graph_from_edges, draw_graph, get_full_cycles_from_graph,\
 import datetime
 import logging
 logger = logging.getLogger(__name__)
-'''
 logging.basicConfig(
     filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
     filemode='w',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
-'''
 
 import networkx as nx
 import time

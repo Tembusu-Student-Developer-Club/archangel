@@ -33,13 +33,11 @@ from arrange import angel_mortal_arrange
 from constants import * # can change to import constants but will need to redo references
 
 logger = logging.getLogger(__name__)
-'''
 logging.basicConfig(
     filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
     filemode='w',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
-'''
 
 # GLOBALS
 PLAYERFILE = "playerlist.csv"

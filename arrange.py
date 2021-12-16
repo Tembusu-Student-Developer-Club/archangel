@@ -38,9 +38,6 @@ RELAX_NO_SAME_HOUSE_REQUIREMENT_PERCENTAGE = 0.35
 # Changing this value changes how much we care about the houses of players being the same
 # If 1 - we don't care, and house de-conflicting is ignored. 0 means we won't allow any players of the same house to be matched.
 
-# RELAX_NO_SAME_FACULTY_REQUIREMENT_PERCENTAGE = 0.00 #not used
-
-
 def get_house_from_player(player):
     if player.housenumber == "":
         raise ValueError('House number provided ' + player.housenumber +
@@ -80,16 +77,7 @@ def is_there_edge_between_players(angel_player, mortal_player):
         angel_player, mortal_player)
 
 
-    # # Check house and faculty are not the same
-
-    '''
-    no same faculty requirement is not used
-    '''
-    # random_relax_fac_requirement = random.random() < RELAX_SAME_FACULTY_REQUIREMENT_PERCENTAGE
-    # if random_relax_fac_requirement:
-    #     players_are_from_same_faculty = False
-    # else:
-    #     players_are_from_same_faculty = angel_player.faculty == mortal_player.faculty
+    # # Check house are not the same
 
     # Relax no same house requirement
     random_relax_house_requirement = random.random() < RELAX_NO_SAME_HOUSE_REQUIREMENT_PERCENTAGE
@@ -99,10 +87,8 @@ def is_there_edge_between_players(angel_player, mortal_player):
         players_are_from_same_house = get_house_from_player(
             angel_player) == get_house_from_player(mortal_player)
 
-    valid_pairing = gender_pref_is_respected and (not players_are_from_same_house) #and (not players_are_from_same_faculty) # Remove same-house reqr -->  #or players_are_from_same_house) and
-    # if players_are_from_same_faculty:
-    #     print (f"players from same fac\n")
-    #ignore this requirement
+    valid_pairing = gender_pref_is_respected and (not players_are_from_same_house)
+
     if not gender_pref_is_respected:
         print (f"gender pref not respected")
     if players_are_from_same_house:
@@ -150,9 +136,6 @@ def angel_mortal_arrange(player_list):
     print (f"\n\n")
 
     list_of_player_chains = []
-
-    # for G in graphs:
-    #    draw_graph(G)
 
     for G in graphs:
 

@@ -26,14 +26,6 @@ def get_house_from_player(player):
         raise ValueError('House number provided ' + player.housenumber +
                          ' for player ' + str(player.username) + ' is invalid!')
 
-
-def get_cg_from_player(player):
-    if (player.cgnumber == ""):
-        return str(randint(60,8888)) #Nursing has no CGs, thus we do not want to conflict with Medicine CGs 1-60
-    else:
-        return player.cgnumber
-
-
 def is_gender_pref_respected(player_being_checked, other_player):
     if player_being_checked.genderpref == GENDER_NOPREF:
         # If they have no preference, always respected
@@ -68,16 +60,7 @@ def is_there_edge_between_players(angel_player, mortal_player):
         angel_player, mortal_player)
 
 
-    # # Check house and faculty are not the same
-
-    '''
-    no same faculty requirement is not used
-    '''
-    # random_relax_fac_requirement = random.random() < RELAX_SAME_FACULTY_REQUIREMENT_PERCENTAGE
-    # if random_relax_fac_requirement:
-    #     players_are_from_same_faculty = False
-    # else:
-    #     players_are_from_same_faculty = angel_player.faculty == mortal_player.faculty
+    # # Check house are not the same
 
     # Relax no same house requirement
     random_relax_house_requirement = random.random() < RELAX_NO_SAME_HOUSE_REQUIREMENT_PERCENTAGE
@@ -87,26 +70,12 @@ def is_there_edge_between_players(angel_player, mortal_player):
         players_are_from_same_house = get_house_from_player(
             angel_player) == get_house_from_player(mortal_player)
 
+    valid_pairing = gender_pref_is_respected and (not players_are_from_same_house)
 
-    # Relax no same CG requirement
-    random_relax_cg_requirement = random.random() < RELAX_NO_SAME_CG_REQUIREMENT_PERCENTAGE
-    if random_relax_cg_requirement:
-        players_are_from_same_cg = False
-    else:
-        players_are_from_same_cg = get_cg_from_player(
-            angel_player) == get_cg_from_player(mortal_player)
-
-
-    valid_pairing = gender_pref_is_respected and (not players_are_from_same_house) and (not players_are_from_same_cg)#and (not players_are_from_same_faculty) # Remove same-house reqr -->  #or players_are_from_same_house) and
-    # if players_are_from_same_faculty:
-    #     print (f"players from same fac\n")
-    #ignore this requirement
     if not gender_pref_is_respected:
         print (f"gender pref not respected")
     if players_are_from_same_house:
         print (f"players from same house\n")
-    if players_are_from_same_cg:
-        print(f"players from same CG\n")
 
     print (f"\n")
 
@@ -150,9 +119,6 @@ def angel_mortal_arrange(player_list):
     print (f"\n\n")
 
     list_of_player_chains = []
-
-    # for G in graphs:
-    #    draw_graph(G)
 
     for G in graphs:
 

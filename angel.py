@@ -116,19 +116,6 @@ def separate_players(player_list):
             logger.info(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
     return (male_male_list, male_female_list, female_female_list)
 
-
-'''
-savegenderlist is unused
-'''
-def savegenderlist(genderlist: list):
-    temp = []
-    for k, v in players.items():
-        temp[k] = v.genderplayer
-        temp[k] = v.genderpref
-
-    with open(genderlist.json, 'w+') as f:
-        json.dump(temp, f)
-
 playerList = read_csv("playerlist.csv")
 
 gendermatchinglist = separate_players(playerList)

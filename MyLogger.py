@@ -12,6 +12,9 @@ class MyLogger:
         if not os.path.isdir(dirname):
             os.mkdir(dirname)
 
+        if cls._logger is not None:
+            return cls._logger
+            
         cls._logger = logging.getLogger("archangel")
         logging.basicConfig(
             filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',

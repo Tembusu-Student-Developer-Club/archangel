@@ -25,21 +25,11 @@ Distance (or whether an edge exists between two nodes) is a function of:
 import csv
 import time
 import random
-import logging
-import datetime
-# # FROMS
+
+# FROMS
+from MyLogger import MyLogger
 from models import Player
 from arrange import angel_mortal_arrange
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
-    filemode='w',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
-
-
 
 # GLOBALS
 PLAYERFILE = "playerlist.csv"
@@ -52,7 +42,8 @@ GENDER_NOPREF = "no preference"
 
 GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0 #100 if you wanna change all players with no gender pre to have genderpref = opposite gender, 0 if you wanna all to remain as no geneder pref
 
-
+# Get Logger
+logger = MyLogger()
 
 
 def read_csv(filename):

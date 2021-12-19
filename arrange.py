@@ -1,30 +1,44 @@
+# IMPORTS
+import networkx as nx
+import time
+import random
+
 # FROMS
-from models import Player
+from MyLogger import MyLogger
 from graph import get_graph_from_edges, draw_graph, get_full_cycles_from_graph,\
     full_cycle_to_edges, get_one_full_cycle, convert_full_cycle_to_graph,\
     get_one_full_cycle_from_graph, get_hamiltonian_path_from_graph,\
     is_there_definitely_no_hamiltonian_cycle, hamilton
-
-import datetime
-import logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename=f'logs/{datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")}.log',
-    filemode='w',
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
-import networkx as nx
-import time
-import random
-# from random import shuffle
 from random import randint
-from constants import * # can change to import constants but will need to redo references
+
+
+# Constants
+GENDER_MALE = "male"
+GENDER_FEMALE = "female"
+GENDER_NONBINARY = "non-binary"
+GENDER_NOPREF = "no preference"
+
+
+DISPLAY_GRAPH = True
+
+
+MINIMUM_MATCHED_PLAYERS_BEFORE_CSVOUTPUT = 0.8 ##Proportion minimum of total player count in accepted csv before 2 csvs will be outputted (1st accepted players list, 2nd rejected players list
+
+RELAX_GENDERPREF_REQUIREMENT_PERCENTAGE = 0.35
+
+RELAX_NO_SAME_HOUSE_REQUIREMENT_PERCENTAGE = 0.35
+# Changing this value changes how much we care about the houses of players being the same
+# If 1 - we don't care, and house de-conflicting is ignored. 0 means we won't allow any players of the same house to be matched.
+
+# Get Logger
+logger = MyLogger()
+
 
 def get_house_from_player(player):
     if player.housenumber == "":
         raise ValueError('House number provided ' + player.housenumber +
                          ' for player ' + str(player.username) + ' is invalid!')
+
 
 def is_gender_pref_respected(player_being_checked, other_player):
     if player_being_checked.genderpref == GENDER_NOPREF:

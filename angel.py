@@ -31,17 +31,10 @@ import yaml
 from MyLogger import MyLogger
 from models import Player
 from arrange import angel_mortal_arrange
+from constants import GENDER_MALE, GENDER_FEMALE, GENDER_NONBINARY, GENDER_NOPREF, GENDER_SWAP_PREFERENCE_PERCENTAGE
 
 # GLOBALS
 PLAYERFILE = "playerlist.csv"
-
-# Constants
-GENDER_MALE = "male"
-GENDER_FEMALE = "female"
-GENDER_NONBINARY = "non-binary"
-GENDER_NOPREF = "no preference"
-
-GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0 #100 if you wanna change all players with no gender pre to have genderpref = opposite gender, 0 if you wanna all to remain as no geneder pref
 
 # Get Logger
 logger = MyLogger()

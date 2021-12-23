@@ -12,3 +12,6 @@ player_attribute_index:
   cg_number: 8
   year_of_study: 9
   faculty: 10
+  likes: 11
+  dislikes: 12
+  comments: 13

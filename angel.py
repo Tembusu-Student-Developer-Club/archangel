@@ -115,39 +115,6 @@ def convert_to_player(row):
                   yearofstudy=year_of_study,
                   faculty=faculty,)
 
-
-def separate_players(player_list):
-    '''
-    Separates the list of player list into male_male, male_female, and
-    female_female gender preference lists
-
-    CURRENTLY USELESS FUNCTION
-    '''
-    male_male_list = []
-    male_female_list = []
-    female_female_list = []
-
-    for player in player_list:
-        if (player.genderplayer == 'male' and player.genderpref == 'male') or (player.genderplayer == "non-binary" and player.genderpref == "male"):
-            male_male_list.append(player)
-            print(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_male_list')
-            logger.info(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_male_list')
-        elif (player.genderplayer == 'female' and player.genderpref == 'female') or (player.genderplayer == "non-binary" and player.genderpref == "female"):
-            female_female_list.append(player)
-            print(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to female_female_list')
-            logger.info(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to female_female_list')
-        else:
-            male_female_list.append(player)
-            print(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
-            logger.info(f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
-    return male_male_list, male_female_list, female_female_list
-
-playerList = read_csv("playerlist.csv")
-
-gendermatchinglist = separate_players(playerList)
-# savegenderlist(male_male_list)
-
-
 def modify_player_list(player_list):
     # Force hetero mix
     for player in player_list:

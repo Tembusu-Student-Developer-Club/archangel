@@ -91,6 +91,10 @@ def convert_to_player(row):
         cg_number = row[index_dict["cg_number"]].strip().lower()
         year_of_study = row[index_dict["year_of_study"]].strip().lower()
         faculty = row[index_dict["faculty"]].strip().lower()
+        likes = row[index_dict["likes"]].strip().lower()
+        dislikes = row[index_dict["dislikes"]].strip().lower()
+        comments = row[index_dict["comments"]].strip().lower()
+
     except FileNotFoundError as e:
         print("WARNING: Config file is named incorrectly or does not exist.")
         exit()
@@ -113,7 +117,10 @@ def convert_to_player(row):
                   housenumber=house_number,
                   cgnumber=cg_number,
                   yearofstudy=year_of_study,
-                  faculty=faculty,)
+                  faculty=faculty,
+                  likes=likes,
+                  dislikes=dislikes,
+                  comments=comments,)
 
 def modify_player_list(player_list):
     # Force hetero mix

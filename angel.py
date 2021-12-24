@@ -33,7 +33,7 @@ from models import Player
 from arrange import angel_mortal_arrange
 
 # GLOBALS
-PLAYERFILE = "playerlist.csv"
+PLAYERFILE = "sampleDataset_25122021.csv"
 
 # Constants
 GENDER_MALE = "male"
@@ -80,20 +80,19 @@ def convert_to_player(row):
         config_file = open("config.yml", 'r')
         index_dict = yaml.full_load(config_file)["player_attribute_index"]
 
-        player_username = row[index_dict["telegram_username"]].strip().lower()
+        telegram_username = row[index_dict["telegram_username"]].strip().lower()
         player_name = row[index_dict["name"]].strip().lower()
-        gender_pref = row[index_dict["gender_pref"]].strip().lower()
-        gender_player = row[index_dict["gender"]].strip().lower()
-        interests = row[index_dict["interests"]].strip()
-        two_truths_one_lie = row[index_dict["two_truths_one_lie"]].strip()
-        introduction = row[index_dict["introduction"]].strip()
+        room_number = row[index_dict["room_number"]].strip().lower()
         house_number = row[index_dict["house_number"]].strip().lower()
-        cg_number = row[index_dict["cg_number"]].strip().lower()
-        year_of_study = row[index_dict["year_of_study"]].strip().lower()
         faculty = row[index_dict["faculty"]].strip().lower()
+        gender_player = row[index_dict["gender"]].strip().lower()
+        gender_pref = row[index_dict["gender_pref"]].strip().lower()
+        year_of_study = row[index_dict["year_of_study"]].strip().lower()
         likes = row[index_dict["likes"]].strip().lower()
         dislikes = row[index_dict["dislikes"]].strip().lower()
         comments = row[index_dict["comments"]].strip().lower()
+
+
 
     except FileNotFoundError as e:
         print("WARNING: Config file is named incorrectly or does not exist.")
@@ -107,20 +106,17 @@ def convert_to_player(row):
               " Pls check if columns correspond to their respective indexes.")
         exit()
 
-    return Player(username=player_username,
-                  playername=player_name,
-                  genderpref=gender_pref,
-                  genderplayer=gender_player,
-                  interests=interests,
-                  twotruthsonelie=two_truths_one_lie,
-                  introduction=introduction,
-                  housenumber=house_number,
-                  cgnumber=cg_number,
-                  yearofstudy=year_of_study,
-                  faculty=faculty,
-                  likes=likes,
-                  dislikes=dislikes,
-                  comments=comments,)
+    return Player(username=telegram_username,
+                      playername=player_name,
+                      housenumber=house_number,
+                      roomnumber=room_number,
+                      faculty=faculty,
+                      genderplayer=gender_player,
+                      genderpref=gender_pref,
+                      yearofstudy=year_of_study,
+                      likes=likes,
+                      dislikes=dislikes,
+                      comments=comments,)
 
 
 def separate_players(player_list):
@@ -178,27 +174,20 @@ def write_to_csv(index, name01, *player_lists):
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
             with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f: # In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
                 writer = csv.writer(f, delimiter=',')
-                header = ['Telegram Username','Name','GenderPref','Gender','Interests','2truths1lie','Intro','House','CG','Year','Faculty'] # add header to output csv file
+
+                config_file = open("config.yml", 'r')
+                index_dict = yaml.full_load(config_file)["player_attribute_index"]
+                index_lst = {k: v for k, v in sorted(index_dict.items(), key=lambda item: item[1])}
+
+                header = [] # add header to output csv file
+                for key, value in index_lst.items():
+                    string2 = key.replace('_', " ")
+                    string3 = ''.join(string2)
+                    string4 = string3.title()
+                    header.append(string4)
+
                 writer.writerow(i for i in header)
                 for player in player_list:
-                    if '\n' in player.twotruthsonelie:
-                        string1 = player.twotruthsonelie
-                        string2 = string1.replace('"', "'")  # JUST IN CASE PEOPLE TYPE " which can screw up a csv file
-                        string3 = ''.join(('"', string2,'"'))  # Double quotations are what CSV uses to keep track of newlines within the same cell
-                        player.twotruthsonelie = string3
-
-                    if '\n' in player.interests:
-                        string11 = player.interests
-                        string12 = string11.replace('"', "")  # JUST IN CASE PEOPLE TYPE " which can screw up a csv file
-                        string13 = ''.join(('"', string12,'"'))  # Double quotations are what CSV uses to keep track of newlines within the same cell
-                        player.interests = string13
-
-                    if '\n' in player.introduction:
-                        string21 = player.introduction
-                        string22 = string21.replace('"',"'")  # JUST IN CASE PEOPLE TYPE " which can screw up a csv file
-                        string23 = ''.join(('"', string22,'"'))  # Double quotations are what CSV uses to keep track of newlines within the same cell
-                        player.introduction = string23
-
                     f.write(player.to_csv_row())
                     f.write("\n")
             # write the first player again to close the loop

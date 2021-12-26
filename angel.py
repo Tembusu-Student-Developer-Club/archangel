@@ -107,16 +107,16 @@ def convert_to_player(row):
         exit()
 
     return Player(username=telegram_username,
-                      playername=player_name,
-                      housenumber=house_number,
-                      roomnumber=room_number,
-                      faculty=faculty,
-                      genderplayer=gender_player,
-                      genderpref=gender_pref,
-                      yearofstudy=year_of_study,
-                      likes=likes,
-                      dislikes=dislikes,
-                      comments=comments,)
+                  playername=player_name,
+                  housenumber=house_number,
+                  roomnumber=room_number,
+                  faculty=faculty,
+                  genderplayer=gender_player,
+                  genderpref=gender_pref,
+                  yearofstudy=year_of_study,
+                  likes=likes,
+                  dislikes=dislikes,
+                  comments=comments,)g
 
 
 def separate_players(player_list):

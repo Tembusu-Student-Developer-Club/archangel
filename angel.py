@@ -56,7 +56,7 @@ def read_csv(filename, column_names):
         csv_file = open(filename, 'r')
         csv_reader = csv.reader(csv_file, delimiter=',')
     except FileNotFoundError as e:
-        print("WARNING: playerlist.csv file does not exist or is incorrectly named.")
+        print("WARNING: {} file does not exist or is incorrectly named.".format(filename))
         exit()
 
     line_count = 0
@@ -152,8 +152,6 @@ def separate_players(player_list):
                 f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
     return male_male_list, male_female_list, female_female_list
 
-
-playerList = read_csv("sampleData/playerlist.csv")
 
 def modify_player_list(player_list):
     # Force hetero mix

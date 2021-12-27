@@ -155,12 +155,6 @@ def separate_players(player_list):
 
 playerList = read_csv("sampleData/playerlist.csv")
 
-gendermatchinglist = separate_players(playerList)
-
-
-# savegenderlist(male_male_list)
-
-
 def modify_player_list(player_list):
     # Force hetero mix
     for player in player_list:
@@ -182,8 +176,7 @@ def write_to_csv(index, name01, column_names, *player_lists):
         if player_list is not None:
             print(f"Length of list: {len(player_list)}")
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
-            with open(f"{index} - {name01} - {cur_time}.csv", 'w',
-                      newline='') as f:  # In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
+            with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f:  # In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
                 writer = csv.writer(f, delimiter=',')
                 index_lst = {k: v for k, v in sorted(column_names.items(), key=lambda item: item[1])}
 
@@ -214,8 +207,13 @@ if __name__ == "__main__":
     print(f"\n\n")
     # Read config_file to obtain the header column header names
     config_file = open(CONFIGFILE, 'r')
-    column_names = yaml.full_load(config_file)["player_attribute_index"]
+    yaml_config = yaml.full_load(config_file)
 
+    try:
+        column_names = yaml_config["player_attribute_index"]
+    except KeyError:
+        print("ERROR: play_attribute_index key does not exist")
+    
     # Get list of Player objects from csv file
     player_list = read_csv(PLAYERFILE, column_names)
     # Map the player list through any neccessary transformations
@@ -226,7 +224,7 @@ if __name__ == "__main__":
     # Write each chain to a separate csv
     print("done")
     for index, player_chain in enumerate(list_of_player_chains):
-        write_to_csv(index, "accepted", column_names, player_chain)
+        write_to_csv(index, "accepted", yaml_config, player_chain)
         # creating csv list of rejected players
         rejected_players_list = difference_operator_lists(player_list, player_chain)
         if len(rejected_players_list) == 0:

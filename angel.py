@@ -33,9 +33,8 @@ from models import Player
 from arrange import angel_mortal_arrange
 
 # GLOBALS
-PLAYERFILE = "playerlist.csv"
+PLAYERFILE = "sampleDataset_25122021.csv"
 CONFIGFILE = "config.yml"
-
 
 # Constants
 GENDER_MALE = "male"
@@ -90,8 +89,6 @@ def convert_to_player(row, column_names_index_dict):
         likes = row[column_names_index_dict["likes"]].strip().lower()
         dislikes = row[column_names_index_dict["dislikes"]].strip().lower()
         comments = row[column_names_index_dict["comments"]].strip().lower()
-
-
 
     except FileNotFoundError as e:
         print("WARNING: Config file is named incorrectly or does not exist.")

@@ -13,3 +13,19 @@ player_attribute_index:
   likes: 9
   dislikes: 10
 
+generalized_columns:
+  special columns:
+    gender_pref: 5
+    gender: 6
+  enum columns:
+    house_number: 2
+    faculty: 4
+    year_of_study: 7
+  text columns:
+    name: 0
+    telegram_username: 1
+    room_number: 3
+    two_truths_one_lie: 8
+    comments: 9
+    likes: 10
+    dislikes: 11

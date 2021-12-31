@@ -81,6 +81,7 @@ def is_there_edge_between_players(angel_player, mortal_player):
     if random_relax_house_requirement:
         players_are_from_same_house = False
     else:
+        print(get_house_from_player(angel_player))
         players_are_from_same_house = get_house_from_player(
             angel_player) == get_house_from_player(mortal_player)
 

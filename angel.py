@@ -49,7 +49,7 @@ GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0  # 100 if you wanna change all players w
 logger = MyLogger()
 
 
-def read_csv(filename, column_names):
+def read_csv(filename, column_names_index_dict):
     person_list = []
 
     try:
@@ -66,7 +66,7 @@ def read_csv(filename, column_names):
             print(f'Column names are {", ".join(row)}')
             line_count += 1
         else:
-            new_person = convert_to_player(row, column_names)
+            new_person = convert_to_player(row, column_names_index_dict)
             person_list.append(new_person)
             logger.info(f'Adding ' + str(new_person))
             print(f'Adding ' + str(new_person))
@@ -77,19 +77,19 @@ def read_csv(filename, column_names):
     return person_list
 
 
-def convert_to_player(row, column_names):
+def convert_to_player(row, column_names_index_dict):
     try:
-        telegram_username = row[column_names["telegram_username"]].strip().lower()
-        player_name = row[column_names["name"]].strip().lower()
-        room_number = row[column_names["room_number"]].strip().lower()
-        house_number = row[column_names["house_number"]].strip().lower()
-        faculty = row[column_names["faculty"]].strip().lower()
-        gender_player = row[column_names["gender"]].strip().lower()
-        gender_pref = row[column_names["gender_pref"]].strip().lower()
-        year_of_study = row[column_names["year_of_study"]].strip().lower()
-        likes = row[column_names["likes"]].strip().lower()
-        dislikes = row[column_names["dislikes"]].strip().lower()
-        comments = row[column_names["comments"]].strip().lower()
+        telegram_username = row[column_names_index_dict["telegram_username"]].strip().lower()
+        player_name = row[column_names_index_dict["name"]].strip().lower()
+        room_number = row[column_names_index_dict["room_number"]].strip().lower()
+        house_number = row[column_names_index_dict["house_number"]].strip().lower()
+        faculty = row[column_names_index_dict["faculty"]].strip().lower()
+        gender_player = row[column_names_index_dict["gender"]].strip().lower()
+        gender_pref = row[column_names_index_dict["gender_pref"]].strip().lower()
+        year_of_study = row[column_names_index_dict["year_of_study"]].strip().lower()
+        likes = row[column_names_index_dict["likes"]].strip().lower()
+        dislikes = row[column_names_index_dict["dislikes"]].strip().lower()
+        comments = row[column_names_index_dict["comments"]].strip().lower()
 
 
 
@@ -115,43 +115,7 @@ def convert_to_player(row, column_names):
                   yearofstudy=year_of_study,
                   likes=likes,
                   dislikes=dislikes,
-                  comments=comments, )
-
-
-def separate_players(player_list):
-    '''
-    Separates the list of player list into male_male, male_female, and
-    female_female gender preference lists
-
-    CURRENTLY USELESS FUNCTION
-    '''
-    male_male_list = []
-    male_female_list = []
-    female_female_list = []
-
-    for player in player_list:
-        if (player.genderplayer == 'male' and player.genderpref == 'male') or (
-                player.genderplayer == "non-binary" and player.genderpref == "male"):
-            male_male_list.append(player)
-            print(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_male_list')
-            logger.info(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_male_list')
-        elif (player.genderplayer == 'female' and player.genderpref == 'female') or (
-                player.genderplayer == "non-binary" and player.genderpref == "female"):
-            female_female_list.append(player)
-            print(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to female_female_list')
-            logger.info(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to female_female_list')
-        else:
-            male_female_list.append(player)
-            print(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
-            logger.info(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
-    return male_male_list, male_female_list, female_female_list
-
+                  comments=comments,)
 
 def modify_player_list(player_list):
     # Force hetero mix
@@ -166,7 +130,7 @@ def modify_player_list(player_list):
                 player.genderpref = GENDER_MALE
 
 
-def write_to_csv(index, name01, column_names, *player_lists):
+def write_to_csv(index, name01, column_names_index_dict, *player_lists):
     '''
     Writes a variable number of player lists to csv
     '''
@@ -176,7 +140,7 @@ def write_to_csv(index, name01, column_names, *player_lists):
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
             with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f:  # In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
                 writer = csv.writer(f, delimiter=',')
-                index_lst = {k: v for k, v in sorted(column_names.items(), key=lambda item: item[1])}
+                index_lst = {k: v for k, v in sorted(column_names_index_dict.items(), key=lambda item: item[1])}
 
                 header = []  # add header to output csv file
                 for key, value in index_lst.items():
@@ -203,17 +167,23 @@ if __name__ == "__main__":
     print(f"tAngel 2021 engine initializing..............")
     print(f"=============================================")
     print(f"\n\n")
+
     # Read config_file to obtain the header column header names
-    config_file = open(CONFIGFILE, 'r')
-    yaml_config = yaml.full_load(config_file)
+    try:
+        config_file = open(CONFIGFILE, 'r')
+        yaml_config = yaml.full_load(config_file)
+    except FileNotFoundError:
+        print("ERROR: {} file does not exist".format(CONFIGFILE))
+        exit()
 
     try:
-        column_names = yaml_config["player_attribute_index"]
+        column_names_index_dict = yaml_config["player_attribute_index"]
     except KeyError:
         print("ERROR: play_attribute_index key does not exist")
-    
+        exit()
+
     # Get list of Player objects from csv file
-    player_list = read_csv(PLAYERFILE, column_names)
+    player_list = read_csv(PLAYERFILE, column_names_index_dict)
     # Map the player list through any neccessary transformations
     modify_player_list(player_list)
 
@@ -228,5 +198,5 @@ if __name__ == "__main__":
         if len(rejected_players_list) == 0:
             print("rejected players list is empty")
         else:
-            write_to_csv(index, "rejected", column_names, rejected_players_list)
+            write_to_csv(index, "rejected", column_names_index_dict, rejected_players_list)
             print("rejected players list csv created")

@@ -21,25 +21,33 @@ generalized_columns:
   enum columns: # Either a lower bound and upper bound or a list of values
     house_number:
       index: 2
+      relax_percentage: 0.35
       allowed_values:
         shan: 4
         ora: 8
         gaja: 12
         tancho: 15
         ponya: 19
+        max: 21
 
     faculty:
       index: 4
-      allowed_values:
-        - SoC
-        - Medicine
-        - Dentistry
+      relax_percentage: 0.35
+      allowed_values: # to be in lower case
+        - soc
+        - medicine
+        - business
+        - fass
+        - dentistry
+        - nursing
+        - engineering
 
     year_of_study:
       index: 7
+      relax_percentage: 0.35
       allowed_values:
         lower_bound: 1
-        upper_bound: 5
+        upper_bound: 4
   text columns:
     name: 0
     telegram_username: 1

@@ -12,7 +12,7 @@ class Player():
                                               self.faculty, self.genderplayer, self.genderpref, self.yearofstudy,
                                               self.likes, self.dislikes, self.comments)
 
-    def __init__(self, **kwargs):
+    def __init__(self, player_data=[], **kwargs):
         self.username = kwargs.get('username')
         self.playername = kwargs.get('playername')
         self.roomnumber = kwargs.get('roomnumber')

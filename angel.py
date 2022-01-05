@@ -33,7 +33,7 @@ from models import Player
 from arrange import angel_mortal_arrange
 
 # GLOBALS
-PLAYERFILE = "sampleDataset_25122021.csv"
+PLAYERFILE = "playerlist.csv"
 CONFIGFILE = "config.yml"
 
 # Constants
@@ -65,7 +65,8 @@ def read_csv(filename, column_names_index_dict):
             print(f'Column names are {", ".join(row)}')
             line_count += 1
         else:
-            new_person = convert_to_player(row, column_names_index_dict)
+            # new_person = convert_to_player(row, column_names_index_dict)
+            new_person = generalized_convert_to_player(row, column_names_index_dict)
             person_list.append(new_person)
             logger.info(f'Adding ' + str(new_person))
             print(f'Adding ' + str(new_person))
@@ -76,43 +77,108 @@ def read_csv(filename, column_names_index_dict):
     return person_list
 
 
-def convert_to_player(row, column_names_index_dict):
+def generalized_convert_to_player(row, column_names_index_dict):
+    player_data = []
+
     try:
-        telegram_username = row[column_names_index_dict["telegram_username"]].strip().lower()
-        player_name = row[column_names_index_dict["name"]].strip().lower()
-        room_number = row[column_names_index_dict["room_number"]].strip().lower()
-        house_number = row[column_names_index_dict["house_number"]].strip().lower()
-        faculty = row[column_names_index_dict["faculty"]].strip().lower()
-        gender_player = row[column_names_index_dict["gender"]].strip().lower()
-        gender_pref = row[column_names_index_dict["gender_pref"]].strip().lower()
-        year_of_study = row[column_names_index_dict["year_of_study"]].strip().lower()
-        likes = row[column_names_index_dict["likes"]].strip().lower()
-        dislikes = row[column_names_index_dict["dislikes"]].strip().lower()
-        comments = row[column_names_index_dict["comments"]].strip().lower()
+        special_columns = column_names_index_dict["special columns"]
+        enum_columns = column_names_index_dict["enum columns"]
+        text_columns = column_names_index_dict["text columns"]
+
+        player_data = (generate_column_key_value_pair(special_columns, row) +
+                       generate_column_key_value_pair(text_columns, row) +
+                       generate_column_key_value_pair(enum_columns, row, check_enum_columns_input_valid))
+
+        print("output is\n", player_data)
 
     except FileNotFoundError as e:
         print("WARNING: Config file is named incorrectly or does not exist.")
         exit()
     except KeyError as e:
-        print("WARNING: Key in player_attribute_index of config.yml should not be changed. Key used here should match "
+        print("WARNING: Key in generalized_columns of config.yml should not be changed. Key used here should match "
               "those in the config.yml dictionary.")
         exit()
     except IndexError as e:
-        print("WARNING: Index value in player_attribute_index of config.yml is not within range of given playlist.csv."
+        print("WARNING: Index value in generalized_columns of config.yml is not within range of given playlist.csv."
               " Pls check if columns correspond to their respective indexes.")
         exit()
 
-    return Player(username=telegram_username,
-                  playername=player_name,
-                  housenumber=house_number,
-                  roomnumber=room_number,
-                  faculty=faculty,
-                  genderplayer=gender_player,
-                  genderpref=gender_pref,
-                  yearofstudy=year_of_study,
-                  likes=likes,
-                  dislikes=dislikes,
-                  comments=comments, )
+    return Player(player_data)
+
+
+def generate_column_key_value_pair(type_of_column, row, function=None):
+    output = []
+    for column_name in type_of_column:
+        # obtains the value of passsing the column_name
+        column_dict = type_of_column[column_name]
+        if isinstance(column_dict, int):
+            # if it column_dit is an integer, it is because it is from special columns or text columns
+            row_input = row[column_dict]
+        else:
+            row_input = row[column_dict['index']]
+        if function is not None:
+            valid = function(type_of_column, column_dict, row_input.strip().lower())
+            if not valid:
+                # outputs the element of which person that is not within the valid range for that
+                print(f"ERROR: {row_input.strip().lower()} of the column {column_name} of {row[0]} is not within the "
+                      f"allowed values of {column_name}")
+                exit()
+        output.append({column_name: row_input})
+    return output
+
+
+def check_enum_columns_input_valid(type_of_column, data, row_input):
+    column_type = type(data['allowed_values'])
+    if column_type is list:
+        validity = row_input in data['allowed_values']
+        return validity
+    elif column_type is dict:
+        dict_values_as_list = list(data['allowed_values'].values())
+        lower_bound = dict_values_as_list[0]
+        upper_bound = dict_values_as_list[-1]
+        validity = lower_bound < int(row_input) < upper_bound
+        return validity
+    else:
+        print(f"ERROR: You have provided an invalid column type under allowed values of {type_of_column}")
+
+
+# def convert_to_player(row, column_names_index_dict):
+#     try:
+#         telegram_username = row[column_names_index_dict["telegram_username"]].strip().lower()
+#         player_name = row[column_names_index_dict["name"]].strip().lower()
+#         room_number = row[column_names_index_dict["room_number"]].strip().lower()
+#         house_number = row[column_names_index_dict["house_number"]].strip().lower()
+#         faculty = row[column_names_index_dict["faculty"]].strip().lower()
+#         gender_player = row[column_names_index_dict["gender"]].strip().lower()
+#         gender_pref = row[column_names_index_dict["gender_pref"]].strip().lower()
+#         year_of_study = row[column_names_index_dict["year_of_study"]].strip().lower()
+#         likes = row[column_names_index_dict["likes"]].strip().lower()
+#         dislikes = row[column_names_index_dict["dislikes"]].strip().lower()
+#         comments = row[column_names_index_dict["comments"]].strip().lower()
+#
+#     except FileNotFoundError as e:
+#         print("WARNING: Config file is named incorrectly or does not exist.")
+#         exit()
+#     except KeyError as e:
+#         print("WARNING: Key in player_attribute_index of config.yml should not be changed. Key used here should match "
+#               "those in the config.yml dictionary.")
+#         exit()
+#     except IndexError as e:
+#         print("WARNING: Index value in player_attribute_index of config.yml is not within range of given playlist.csv."
+#               " Pls check if columns correspond to their respective indexes.")
+#         exit()
+#
+#     return Player(username=telegram_username,
+#                   playername=player_name,
+#                   housenumber=house_number,
+#                   roomnumber=room_number,
+#                   faculty=faculty,
+#                   genderplayer=gender_player,
+#                   genderpref=gender_pref,
+#                   yearofstudy=year_of_study,
+#                   likes=likes,
+#                   dislikes=dislikes,
+#                   comments=comments, )
 
 
 def separate_players(player_list):
@@ -210,7 +276,7 @@ if __name__ == "__main__":
         exit()
 
     try:
-        column_names_index_dict = yaml_config["player_attribute_index"]
+        column_names_index_dict = yaml_config["generalized_columns"]
     except KeyError:
         print("ERROR: play_attribute_index key does not exist")
         exit()

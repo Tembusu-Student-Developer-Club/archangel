@@ -1,17 +1,15 @@
 # These track the column number of each player attribute in playerlist.csv file
 # Note that change in csv column order can be edited here.
 player_attribute_index:
-  telegram_username: 0
-  name: 1
-  gender_pref: 2
-  gender: 3
-  interests: 4
-  two_truths_one_lie: 5
-  introduction: 6
-  house_number: 7
-  cg_number: 8
-  year_of_study: 9
-  faculty: 10
-  likes: 11
-  dislikes: 12
-  comments: 13
+  name: 0
+  telegram_username: 1
+  house_number: 2
+  room_number: 3
+  faculty: 4
+  gender_pref: 5
+  gender: 6
+  year_of_study: 7
+  comments: 8
+  likes: 9
+  dislikes: 10
+

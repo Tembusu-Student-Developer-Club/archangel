@@ -43,6 +43,7 @@ GENDER_NONBINARY = "non-binary"
 GENDER_NOPREF = "no preference"
 
 GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0  # 100 if you wanna change all players with no gender pre to have genderpref = opposite gender, 0 if you wanna all to remain as no geneder pref
+# = opposite gender, 0 if you wanna all to remain as no geneder pref
 
 # Get Logger
 logger = MyLogger()
@@ -109,7 +110,7 @@ def generalized_convert_to_player(row, column_names_index_dict):
 def generate_column_key_value_pair(type_of_column, row, function=None):
     output = []
     for column_name in type_of_column:
-        # obtains the value of passsing the column_name
+        # obtains the value of passing the column_name as a key to the type of column
         column_dict = type_of_column[column_name]
         if isinstance(column_dict, int):
             # if it column_dit is an integer, it is because it is from special columns or text columns
@@ -118,11 +119,11 @@ def generate_column_key_value_pair(type_of_column, row, function=None):
             row_input = row[column_dict['index']]
         if function is not None:
             valid = function(type_of_column, column_dict, row_input.strip().lower())
-            if not valid:
-                # outputs the element of which person that is not within the valid range for that
-                print(f"ERROR: {row_input.strip().lower()} of the column {column_name} of {row[0]} is not within the "
-                      f"allowed values of {column_name}")
-                exit()
+            # if not valid:
+            #     # outputs the element of which person that is not within the valid range for that
+            #     print(f"ERROR: {row_input.strip().lower()} of the {column_name} column of {row[0]} is not within the "
+            #           f"allowed values of {column_name}")
+            #     exit()
         output.append({column_name: row_input})
     return output
 
@@ -182,12 +183,12 @@ def check_enum_columns_input_valid(type_of_column, data, row_input):
 
 
 def separate_players(player_list):
-    '''
+    """
     Separates the list of player list into male_male, male_female, and
     female_female gender preference lists
 
     CURRENTLY USELESS FUNCTION
-    '''
+    """
     male_male_list = []
     male_female_list = []
     female_female_list = []
@@ -197,22 +198,28 @@ def separate_players(player_list):
                 player.genderplayer == "non-binary" and player.genderpref == "male"):
             male_male_list.append(player)
             print(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_male_list')
+                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to '
+                f'male_male_list')
             logger.info(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_male_list')
+                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to '
+                f'male_male_list')
         elif (player.genderplayer == 'female' and player.genderpref == 'female') or (
                 player.genderplayer == "non-binary" and player.genderpref == "female"):
             female_female_list.append(player)
             print(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to female_female_list')
+                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to '
+                f'female_female_list')
             logger.info(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to female_female_list')
+                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to '
+                f'female_female_list')
         else:
             male_female_list.append(player)
             print(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
+                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to '
+                f'male_female_list')
             logger.info(
-                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to male_female_list')
+                f'Added Player: {player.username}, Gender: {player.genderplayer}, GenderPref: {player.genderpref} to '
+                f'male_female_list')
     return male_male_list, male_female_list, female_female_list
 
 
@@ -228,27 +235,51 @@ def modify_player_list(player_list):
                 print(f"Female -> Male")
                 player.genderpref = GENDER_MALE
 
+def generate_column_header_list(type_of_column, name_of_column):
+    output = []
+
+    for column_name in type_of_column:
+        column_value = type_of_column[column_name]
+        if type(column_value) is dict:
+            column_value = column_value['index']
+        output.append({column_name: column_value})
+
+    return output
 
 def write_to_csv(index, name01, column_names_index_dict, *player_lists):
-    '''
+    """
     Writes a variable number of player lists to csv
-    '''
+    """
     for player_list in player_lists:
         if player_list is not None:
             print(f"Length of list: {len(player_list)}")
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
-            with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f:  # In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
+            with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f:  # In Python 3, if do not put
+                # newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
                 writer = csv.writer(f, delimiter=',')
-                index_lst = {k: v for k, v in sorted(column_names_index_dict.items(), key=lambda item: item[1])}
 
+                special_columns = column_names_index_dict["special columns"]
+                enum_columns = column_names_index_dict["enum columns"]
+                text_columns = column_names_index_dict["text columns"]
+
+                column_header_list = (generate_column_header_list(special_columns, "special column") +
+                                      generate_column_header_list(text_columns, "text column") +
+                                      generate_column_header_list(enum_columns, "enum column"))
+
+                sorted_column_header_list_by_value = sorted(column_header_list, key = lambda i: i[list(i.keys())[0]])
+
+                print(sorted_column_header_list_by_value)
                 header = []  # add header to output csv file
-                for key, value in index_lst.items():
-                    capitalised_first_letter_key = key.replace('_', " ").title()
+                for item in sorted_column_header_list_by_value:
+                    capitalised_first_letter_key = list(item.keys())[0].replace('_', " ").title()
                     header.append(capitalised_first_letter_key)
+
+                print(header)
 
                 writer.writerow(i for i in header)
                 for player in player_list:
-                    f.write(player.to_csv_row())
+                    print(player)
+                    f.write(player.to_csv_row(sorted_column_header_list_by_value))
                     f.write("\n")
                 # write the first player again to close the loop
                 #     f.write(player_list[0].to_csv_row())
@@ -291,7 +322,7 @@ if __name__ == "__main__":
     # Write each chain to a separate csv
     print("done")
     for index, player_chain in enumerate(list_of_player_chains):
-        write_to_csv(index, "accepted", yaml_config, player_chain)
+        write_to_csv(index, "accepted", column_names_index_dict, player_chain)
         # creating csv list of rejected players
         rejected_players_list = difference_operator_lists(player_list, player_chain)
         if len(rejected_players_list) == 0:

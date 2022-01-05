@@ -47,7 +47,7 @@ def is_gender_pref_respected(player_being_checked, other_player):
         return True
     else:
         # Otherwise check if the other_player gender is what is wanted
-        gender_pref_respected = player_being_checked.genderpref == other_player.genderplayer
+        gender_pref_respected = player_being_checked.genderpref == other_player.gender
         return gender_pref_respected
 
 

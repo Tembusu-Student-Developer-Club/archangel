@@ -42,7 +42,6 @@ GENDER_FEMALE = "female"
 GENDER_NONBINARY = "non-binary"
 GENDER_NOPREF = "no preference"
 
-GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0  # 100 if you wanna change all players with no gender pre to have genderpref = opposite gender, 0 if you wanna all to remain as no geneder pref
 GENDER_SWAP_PREFERENCE_PERCENTAGE = 0.0
 # 100 if you wanna change all players with no gender pre to have genderpref
 # = opposite gender, 0 if you wanna all to remain as no gender pref

@@ -63,7 +63,7 @@ def is_there_edge_between_players(angel_player, mortal_player):
     players - check their gender preferences and return False (no edge)
     between them
     '''
-    print (f"Checking {angel_player} and {mortal_player}")
+    logger.debug(f"Checking {angel_player} and {mortal_player}")
 
     #Check if gender choice is respected
     random_relax_genderpref_requirement = random.random() < RELAX_GENDERPREF_REQUIREMENT_PERCENTAGE
@@ -87,11 +87,9 @@ def is_there_edge_between_players(angel_player, mortal_player):
     valid_pairing = gender_pref_is_respected and (not players_are_from_same_house)
 
     if not gender_pref_is_respected:
-        print (f"gender pref not respected")
+        logger.debug(f"Gender pref not respected")
     if players_are_from_same_house:
-        print (f"players from same house\n")
-
-    print (f"\n")
+        logger.debug(f"Players from same house")
 
     return valid_pairing
 
@@ -105,7 +103,7 @@ def get_player_edges_from_player_list(player_list):
                 if is_there_edge_between_players(player, other_player):
                     player_edges.append((player, other_player))
                 else:
-                    logger.info(f"{player} and {other_player} have conflicts") # to keep track who was rejected
+                    logger.debug(f"{player} and {other_player} have conflicts") # to keep track who was rejected
     return player_edges
 
 
@@ -114,39 +112,40 @@ def angel_mortal_arrange(player_list):
     Depending on the gender preferences to follow, run the edge-finding
     algorithm, generate a graph and find a Hamiltonian circuit.
     '''
-    print (f"Arranging player list: {player_list}")
+    logger.info(f"Arranging player list: {player_list}")
     # Convert the list of players into a list of valid edges
     player_edges = get_player_edges_from_player_list(player_list)
     # Generate the overall graph from all edges
     overall_graph = get_graph_from_edges(player_edges)
-    print (f"Number of nodes in overall graph: {overall_graph.number_of_nodes()}")
+    logger.info(f"Number of nodes in overall graph: {overall_graph.number_of_nodes()}")
     # Find all connected components and find cycles for all
     graphs = list(overall_graph.subgraph(c) for c in
                   nx.strongly_connected_components(overall_graph)) ##.strongly_connected_component_subgraphs(overall_graph) is deprecated in version 2.4 https://stackoverflow.com/questions/61154740/attributeerror-module-networkx-has-no-attribute-connected-component-subgraph
 
-    print (f"\nConnected components detected: {len(graphs)}")
+    logger.info(f"Connected components detected: {len(graphs)}")
 
-    print (f"Printing original player list: ")
+    logger.debug(f"Logging original player list: ")
     for player in player_list:
-        print (f"{player}")
-    print (f"Original player list size: {len(player_list)}")
-    print (f"\n\n")
+        logger.debug(f"{player}")
+    logger.info(f"Original player list size: {len(player_list)}")
 
     list_of_player_chains = []
 
-    for G in graphs:
+    for i in range(len(graphs)):
+        G = graphs[i]
+        logger.info(f"GRAPH {i}")
 
-        print (f"Printing players in current graph:")
+        logger.debug(f"Logging players:")
         for graph_player in G.nodes():
-            print (f"{graph_player}")
+            logger.debug(f"{graph_player}")
         
         # Draw this intermediate graph
-        print (f"Number of nodes in graph: {G.number_of_nodes()}")
+        logger.info(f"Number of nodes in graph: {G.number_of_nodes()}")
         if DISPLAY_GRAPH:
             draw_graph(G)
         # Find out if there is DEFINITELY no hamiltonian cycle
         is_there_full_cycle = is_there_definitely_no_hamiltonian_cycle(G)
-        print (f"Is there DEFINITELY no full cycle? - {is_there_full_cycle}")
+        logger.info(f"Is there DEFINITELY no full cycle? - {is_there_full_cycle}")
         # Sleep for a few seconds
         time.sleep(2)
         '''
@@ -164,10 +163,8 @@ def angel_mortal_arrange(player_list):
             list_of_player_chains.append(full_cycle)
             # find out which nodes were missing
             players_not_in_csv = set(player_list)-set(list(G.nodes()))
-            logger.info(f"CSV has been printed. However, the following players {players_not_in_csv} are not inside. Please match them manually.")
-            print(f"Found a full cycle! CSV is printed. However, the following players {players_not_in_csv} are not inside. Please match them manually.")
+            logger.info(f"Found a full cycle! CSV has been printed. However, the following players {players_not_in_csv} are not inside. Please match them manually.")
         else:
-            print (f"There is no full cycle - sorry! This means that the current set of players cannot form a perfect chain given the arrange requirements. No CSV printed.")
-            logger.info(f"CSV not printed - no full cycle found")
+            logger.info(f"There is no full cycle - sorry! This means that the current set of players cannot form a perfect chain given the arrange requirements. No CSV printed.")
 
     return list_of_player_chains

@@ -2,6 +2,11 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from random import sample
 from networkx.algorithms.tournament import hamiltonian_path
+from MyLogger import MyLogger
+
+
+# Get Logger
+logger = MyLogger()
 
 def draw_graph(G, labels=None, graph_layout='spring',
                node_size=1600, node_color='blue', node_alpha=0.3,
@@ -66,7 +71,7 @@ def is_there_definitely_no_hamiltonian_cycle(G):
     for node in nodes:
         # If some node only has one neighbour - NO HAM-CYCLE EXISTS
         if len(list(G.neighbors(node))) <= 1:
-            print (f"Node has <= 1 neighbour: {node}")
+            logger.debug(f"Node has <= 1 neighbour: {node}")
             return True
 
     return False
@@ -82,12 +87,12 @@ def get_one_full_cycle_from_graph(G):
         cycle_length = len(cycle)
 
         if idx % 10000 == 0:
-            print (f"Processing cycle: {idx} with length {cycle_length} | expecting length {number_of_nodes}")
+            logger.debug(f"Processing cycle: {idx} with length {cycle_length} | expecting length {number_of_nodes}")
             remaining_nodes = set(nodes).difference(cycle)
-            print (f"Remaining nodes: {remaining_nodes}\n")
+            logger.debug(f"Remaining nodes: {remaining_nodes}\n")
 
         if cycle_length == number_of_nodes:
-            print (f"Solution found at cycle {idx} with length {cycle_length}")
+            logger.info(f"Solution found at cycle {idx} with length {cycle_length}")
             return cycle
 
     return None
@@ -119,7 +124,7 @@ def hamilton(G):
                 return p
             else:
                 path_length = len(p)
-                print (f"Path length (progress): {path_length} / {n}")
+                logger.debug(f"Path length (progress): {path_length} / {n}")
                 F.append((g,p))
     return None
 
@@ -128,7 +133,7 @@ def get_full_cycles_from_graph(G):
     cycles = list(nx.simple_cycles(G))
     number_of_nodes = nx.number_of_nodes(G)
     if number_of_nodes != 0:
-        print (f"Number of nodes in cycle: {number_of_nodes}")
+        logger.debug(f"Number of nodes in cycle: {number_of_nodes}")
         full_cycles = filter(lambda cycle: len(cycle) == number_of_nodes, cycles)
         return full_cycles
     else:
@@ -151,7 +156,7 @@ def get_one_full_cycle(full_cycles):
     if full_cycles is not None and len(full_cycles) > 0:
         full_cycles = sample(full_cycles, len(full_cycles))
         full_cycle = full_cycles[0]
-        print (f"Full cycle found: {full_cycle}")
+        logger.info(f"Full cycle found: {full_cycle}")
         return full_cycle
 
 

@@ -54,24 +54,20 @@ def read_csv(filename):
         csv_file = open(filename, 'r')
         csv_reader = csv.reader(csv_file, delimiter=',')
     except FileNotFoundError as e:
-        print("WARNING: playerlist.csv file does not exist or is incorrectly named.")
+        logger.error("playerlist.csv file does not exist or is incorrectly named.")
         exit()
 
     line_count = 0
     for row in csv_reader:
         if line_count == 0:
             logger.info(f'Column names are {", ".join(row)}')
-            print(f'Column names are {", ".join(row)}')
             line_count += 1
         else:
             new_person = convert_to_player(row)
             person_list.append(new_person)
-            logger.info(f'Adding ' + str(new_person))
-            print(f'Adding ' + str(new_person))
+            logger.debug(f'Adding line {line_count+1}, {str(new_person)}')
             line_count += 1
-    print(f'Processed {line_count} players.')
-    logger.info(f'Processed {line_count} players.')
-    logger.info(f'person_list has been processed successfully')
+    logger.info(f'Processed {line_count} players into person_list successfully.')
     return person_list
 
 
@@ -96,14 +92,14 @@ def convert_to_player(row):
         comments = row[index_dict["comments"]].strip().lower()
 
     except FileNotFoundError as e:
-        print("WARNING: Config file is named incorrectly or does not exist.")
+        logger.error(f"Exception {e}: Config file is named incorrectly or does not exist.")
         exit()
     except KeyError as e:
-        print("WARNING: Key in player_attribute_index of config.yml should not be changed. Key used here should match "
+        logger.error(f"Exception {e}: Key in player_attribute_index of config.yml should not be changed. Key used here should match "
               "those in the config.yml dictionary.")
         exit()
     except IndexError as e:
-        print("WARNING: Index value in player_attribute_index of config.yml is not within range of given playlist.csv."
+        logger.error(f"Exception {e}: Index value in player_attribute_index of config.yml is not within range of given playlist.csv."
               " Pls check if columns correspond to their respective indexes.")
         exit()
 
@@ -128,10 +124,10 @@ def modify_player_list(player_list):
         if player.genderpref == GENDER_NOPREF:
             random_change_preference = random.random() < GENDER_SWAP_PREFERENCE_PERCENTAGE
             if player.genderplayer == GENDER_MALE and random_change_preference:
-                print(f"Male -> Female")
+                logger.debug(f"Setting preference of {str(player)} Male -> Female")
                 player.genderpref = GENDER_FEMALE
             elif player.genderplayer == GENDER_FEMALE and random_change_preference:
-                print(f"Female -> Male")
+                logger.debug(f"Setting preference of {str(player)} Female -> Male")
                 player.genderpref = GENDER_MALE
 
 
@@ -141,7 +137,7 @@ def write_to_csv(index, name01, *player_lists):
     '''
     for player_list in player_lists:
         if player_list is not None:
-            print(f"Length of list: {len(player_list)}")
+            logger.info(f"Length of list: {len(player_list)}")
             cur_time = time.strftime("%Y-%m-%d %H-%M-%S")
             with open(f"{index} - {name01} - {cur_time}.csv", 'w', newline='') as f: # In Python 3, if do not put newline='' AND choose 'w' instead of 'wb', you will have an empty 2nd row in output .csv file.
                 writer = csv.writer(f, delimiter=',')
@@ -179,11 +175,9 @@ def difference_operator_lists(li1, li2):  # Used to find out the rejected player
 
 
 if __name__ == "__main__":
-    print(f"\n\n")
-    print(f"=============================================")
-    print(f"tAngel 2021 engine initializing..............")
-    print(f"=============================================")
-    print(f"\n\n")
+    logger.info(f"=============================================")
+    logger.info(f"tAngel 2021 engine initializing..............")
+    logger.info(f"=============================================")
 
     # Get list of Player objects from csv file
     player_list = read_csv(PLAYERFILE)
@@ -192,13 +186,14 @@ if __name__ == "__main__":
     # separate the players into player-chains (connected components)
     list_of_player_chains = angel_mortal_arrange(player_list)
     # Write each chain to a separate csv
-    print("done")
+    logger.info("Writing chains to csvs")
     for index, player_chain in enumerate(list_of_player_chains):
         write_to_csv(index, "accepted", player_chain)
         # creating csv list of rejected players
         rejected_players_list = difference_operator_lists(player_list, player_chain)
         if len(rejected_players_list) == 0:
-            print("rejected players list is empty")
+            logger.info("Rejected players list is empty")
         else:
             write_to_csv(index, "rejected", rejected_players_list)
-            print("rejected players list csv created")
+            logger.info("Rejected players list csv created")
+    logger.info("Angel completed successfully - terminating")

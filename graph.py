@@ -2,6 +2,11 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from random import sample
 from networkx.algorithms.tournament import hamiltonian_path
+from MyLogger import MyLogger
+
+# Get Logger
+logger = MyLogger()
+
 
 def draw_graph(G, labels=None, graph_layout='spring',
                node_size=1600, node_color='blue', node_alpha=0.3,
@@ -25,15 +30,15 @@ def draw_graph(G, labels=None, graph_layout='spring',
         graph_pos = nx.shell_layout(G)
 
     # draw graph
-    nx.draw_networkx_nodes(G, pos = graph_pos, node_size=node_size,
+    nx.draw_networkx_nodes(G, pos=graph_pos, node_size=node_size,
                            alpha=node_alpha, node_color=node_color)
-    nx.draw_networkx_edges(G,  pos = graph_pos, width=edge_thickness,
+    nx.draw_networkx_edges(G, pos=graph_pos, width=edge_thickness,
                            alpha=edge_alpha, edge_color=edge_color)
-    nx.draw_networkx_labels(G,  pos = graph_pos, font_size=node_text_size,
+    nx.draw_networkx_labels(G, pos=graph_pos, font_size=node_text_size,
                             font_family=text_font)
 
     # if labels is None:
-        # labels = range(len(graph))
+    # labels = range(len(graph))
 
     # edge_labels = dict(zip(graph, labels))
     # nx.draw_networkx_edge_labels(G, graph_pos, edge_labels=edge_labels,
@@ -66,11 +71,10 @@ def is_there_definitely_no_hamiltonian_cycle(G):
     for node in nodes:
         # If some node only has one neighbour - NO HAM-CYCLE EXISTS
         if len(list(G.neighbors(node))) <= 1:
-            print (f"Node has <= 1 neighbour: {node}")
+            logger.debug(f"Node has <= 1 neighbour: {node}")
             return True
 
     return False
-
 
 
 def get_one_full_cycle_from_graph(G):
@@ -82,19 +86,20 @@ def get_one_full_cycle_from_graph(G):
         cycle_length = len(cycle)
 
         if idx % 10000 == 0:
-            print (f"Processing cycle: {idx} with length {cycle_length} | expecting length {number_of_nodes}")
+            logger.debug(f"Processing cycle: {idx} with length {cycle_length} | expecting length {number_of_nodes}")
             remaining_nodes = set(nodes).difference(cycle)
-            print (f"Remaining nodes: {remaining_nodes}\n")
+            logger.debug(f"Remaining nodes: {remaining_nodes}\n")
 
         if cycle_length == number_of_nodes:
-            print (f"Solution found at cycle {idx} with length {cycle_length}")
+            logger.info(f"Solution found at cycle {idx} with length {cycle_length}")
             return cycle
 
     return None
 
+
 def hamilton(G):
     # Start with F - which is a tuple of the graph and the first node (the path so far)
-    F = [(G,[list(G.nodes())[0]])]
+    F = [(G, [list(G.nodes())[0]])]
     n = G.number_of_nodes()
     # while we still have elements in F
     while F:
@@ -113,14 +118,14 @@ def hamilton(G):
             # Remove the node that we just used to find neighbours for
             conf_g.remove_node(path[-1])
             # Add this to the new working path
-            confs.append((conf_g,conf_p))
+            confs.append((conf_g, conf_p))
         for g, p in confs:
             if len(p) == n:
                 return p
             else:
                 path_length = len(p)
-                print (f"Path length (progress): {path_length} / {n}")
-                F.append((g,p))
+                logger.debug(f"Path length (progress): {path_length} / {n}")
+                F.append((g, p))
     return None
 
 
@@ -128,7 +133,7 @@ def get_full_cycles_from_graph(G):
     cycles = list(nx.simple_cycles(G))
     number_of_nodes = nx.number_of_nodes(G)
     if number_of_nodes != 0:
-        print (f"Number of nodes in cycle: {number_of_nodes}")
+        logger.debug(f"Number of nodes in cycle: {number_of_nodes}")
         full_cycles = filter(lambda cycle: len(cycle) == number_of_nodes, cycles)
         return full_cycles
     else:
@@ -151,7 +156,7 @@ def get_one_full_cycle(full_cycles):
     if full_cycles is not None and len(full_cycles) > 0:
         full_cycles = sample(full_cycles, len(full_cycles))
         full_cycle = full_cycles[0]
-        print (f"Full cycle found: {full_cycle}")
+        logger.info(f"Full cycle found: {full_cycle}")
         return full_cycle
 
 
@@ -167,7 +172,7 @@ def convert_full_cycle_to_graph(full_cycle):
 if __name__ == "__main__":
     graph = nx.DiGraph()
     graph.add_edges_from([(0, 1), (1, 5), (1, 7), (4, 5), (4, 8), (1, 6), (3, 7), (5, 9),
-             (2, 4), (0, 4), (2, 5), (3, 6), (8, 9)])
+                          (2, 4), (0, 4), (2, 5), (3, 6), (8, 9)])
 
     # you may name your edge labels
     labels = map(chr, range(65, 65 + len(graph)))

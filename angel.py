@@ -54,7 +54,9 @@ def read_csv(filename):
         csv_file = open(filename, 'r')
         csv_reader = csv.reader(csv_file, delimiter=',')
     except FileNotFoundError as e:
-        logger.error("playerlist.csv file does not exist or is incorrectly named.")
+        err_msg = f"Player list csv file does not exist or is incorrectly named. Was specified as {PLAYERFILE}"
+        logger.error(err_msg)
+        print("Error: " + err_msg)
         exit()
 
     line_count = 0
@@ -92,17 +94,21 @@ def convert_to_player(row):
         comments = row[index_dict["comments"]].strip().lower()
 
     except FileNotFoundError as e:
-        logger.error(f"Exception {e}: Config file is named incorrectly or does not exist.")
+        err_msg = f"Exception {e}: \"config.yml\" was not found."
+        logger.error(err_msg)
+        print("Error: " + err_msg)
         exit()
     except KeyError as e:
-        logger.error(
-            f"Exception {e}: Key in player_attribute_index of config.yml should not be changed. Key used here should match "
-            "those in the config.yml dictionary.")
+        err_msg = f"Exception {e}: Key in player_attribute_index of config.yml should not be changed. Key used here " \
+                  f"should match those in the config.yml dictionary. "
+        logger.error(err_msg)
+        print("Error: " + err_msg)
         exit()
     except IndexError as e:
-        logger.error(
-            f"Exception {e}: Index value in player_attribute_index of config.yml is not within range of given playlist.csv."
-            " Pls check if columns correspond to their respective indexes.")
+        err_msg = f"Exception {e}: Index value in player_attribute_index of config.yml is not within range of given " \
+                  f"playlist.csv. Pls check if columns correspond to their respective indexes. "
+        logger.error(err_msg)
+        print("Error: " + err_msg)
         exit()
 
     return Player(username=player_username,

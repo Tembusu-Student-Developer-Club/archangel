@@ -4,9 +4,9 @@ from random import sample
 from networkx.algorithms.tournament import hamiltonian_path
 from MyLogger import MyLogger
 
-
 # Get Logger
 logger = MyLogger()
+
 
 def draw_graph(G, labels=None, graph_layout='spring',
                node_size=1600, node_color='blue', node_alpha=0.3,
@@ -30,15 +30,15 @@ def draw_graph(G, labels=None, graph_layout='spring',
         graph_pos = nx.shell_layout(G)
 
     # draw graph
-    nx.draw_networkx_nodes(G, pos = graph_pos, node_size=node_size,
+    nx.draw_networkx_nodes(G, pos=graph_pos, node_size=node_size,
                            alpha=node_alpha, node_color=node_color)
-    nx.draw_networkx_edges(G,  pos = graph_pos, width=edge_thickness,
+    nx.draw_networkx_edges(G, pos=graph_pos, width=edge_thickness,
                            alpha=edge_alpha, edge_color=edge_color)
-    nx.draw_networkx_labels(G,  pos = graph_pos, font_size=node_text_size,
+    nx.draw_networkx_labels(G, pos=graph_pos, font_size=node_text_size,
                             font_family=text_font)
 
     # if labels is None:
-        # labels = range(len(graph))
+    # labels = range(len(graph))
 
     # edge_labels = dict(zip(graph, labels))
     # nx.draw_networkx_edge_labels(G, graph_pos, edge_labels=edge_labels,
@@ -77,7 +77,6 @@ def is_there_definitely_no_hamiltonian_cycle(G):
     return False
 
 
-
 def get_one_full_cycle_from_graph(G):
     number_of_nodes = nx.number_of_nodes(G)
     nodes = G.nodes()
@@ -97,9 +96,10 @@ def get_one_full_cycle_from_graph(G):
 
     return None
 
+
 def hamilton(G):
     # Start with F - which is a tuple of the graph and the first node (the path so far)
-    F = [(G,[list(G.nodes())[0]])]
+    F = [(G, [list(G.nodes())[0]])]
     n = G.number_of_nodes()
     # while we still have elements in F
     while F:
@@ -118,14 +118,14 @@ def hamilton(G):
             # Remove the node that we just used to find neighbours for
             conf_g.remove_node(path[-1])
             # Add this to the new working path
-            confs.append((conf_g,conf_p))
+            confs.append((conf_g, conf_p))
         for g, p in confs:
             if len(p) == n:
                 return p
             else:
                 path_length = len(p)
                 logger.debug(f"Path length (progress): {path_length} / {n}")
-                F.append((g,p))
+                F.append((g, p))
     return None
 
 
@@ -172,7 +172,7 @@ def convert_full_cycle_to_graph(full_cycle):
 if __name__ == "__main__":
     graph = nx.DiGraph()
     graph.add_edges_from([(0, 1), (1, 5), (1, 7), (4, 5), (4, 8), (1, 6), (3, 7), (5, 9),
-             (2, 4), (0, 4), (2, 5), (3, 6), (8, 9)])
+                          (2, 4), (0, 4), (2, 5), (3, 6), (8, 9)])
 
     # you may name your edge labels
     labels = map(chr, range(65, 65 + len(graph)))

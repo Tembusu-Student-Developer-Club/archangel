@@ -5,12 +5,11 @@ import random
 
 # FROMS
 from MyLogger import MyLogger
-from graph import get_graph_from_edges, draw_graph, get_full_cycles_from_graph,\
-    full_cycle_to_edges, get_one_full_cycle, convert_full_cycle_to_graph,\
-    get_one_full_cycle_from_graph, get_hamiltonian_path_from_graph,\
+from graph import get_graph_from_edges, draw_graph, get_full_cycles_from_graph, \
+    full_cycle_to_edges, get_one_full_cycle, convert_full_cycle_to_graph, \
+    get_one_full_cycle_from_graph, get_hamiltonian_path_from_graph, \
     is_there_definitely_no_hamiltonian_cycle, hamilton
 from random import randint
-
 
 # Constants
 GENDER_MALE = "male"
@@ -18,11 +17,9 @@ GENDER_FEMALE = "female"
 GENDER_NONBINARY = "non-binary"
 GENDER_NOPREF = "no preference"
 
-
 DISPLAY_GRAPH = True
 
-
-MINIMUM_MATCHED_PLAYERS_BEFORE_CSVOUTPUT = 0.8 ##Proportion minimum of total player count in accepted csv before 2 csvs will be outputted (1st accepted players list, 2nd rejected players list
+MINIMUM_MATCHED_PLAYERS_BEFORE_CSVOUTPUT = 0.8  ##Proportion minimum of total player count in accepted csv before 2 csvs will be outputted (1st accepted players list, 2nd rejected players list
 
 RELAX_GENDERPREF_REQUIREMENT_PERCENTAGE = 0.35
 
@@ -53,7 +50,7 @@ def is_gender_pref_respected(player_being_checked, other_player):
 
 def are_gender_prefs_respected(angel_player, mortal_player):
     return is_gender_pref_respected(angel_player, mortal_player) and \
-        is_gender_pref_respected(mortal_player, angel_player)
+           is_gender_pref_respected(mortal_player, angel_player)
 
 
 def is_there_edge_between_players(angel_player, mortal_player):
@@ -65,14 +62,13 @@ def is_there_edge_between_players(angel_player, mortal_player):
     '''
     logger.debug(f"Checking {angel_player} and {mortal_player}")
 
-    #Check if gender choice is respected
+    # Check if gender choice is respected
     random_relax_genderpref_requirement = random.random() < RELAX_GENDERPREF_REQUIREMENT_PERCENTAGE
     if random_relax_genderpref_requirement:
         gender_pref_is_respected = True
     else:
         gender_pref_is_respected = are_gender_prefs_respected(
-        angel_player, mortal_player)
-
+            angel_player, mortal_player)
 
     # # Check house are not the same
 
@@ -103,7 +99,7 @@ def get_player_edges_from_player_list(player_list):
                 if is_there_edge_between_players(player, other_player):
                     player_edges.append((player, other_player))
                 else:
-                    logger.debug(f"{player} and {other_player} have conflicts") # to keep track who was rejected
+                    logger.debug(f"{player} and {other_player} have conflicts")  # to keep track who was rejected
     return player_edges
 
 
@@ -120,7 +116,8 @@ def angel_mortal_arrange(player_list):
     logger.info(f"Number of nodes in overall graph: {overall_graph.number_of_nodes()}")
     # Find all connected components and find cycles for all
     graphs = list(overall_graph.subgraph(c) for c in
-                  nx.strongly_connected_components(overall_graph)) ##.strongly_connected_component_subgraphs(overall_graph) is deprecated in version 2.4 https://stackoverflow.com/questions/61154740/attributeerror-module-networkx-has-no-attribute-connected-component-subgraph
+                  nx.strongly_connected_components(
+                      overall_graph))  ##.strongly_connected_component_subgraphs(overall_graph) is deprecated in version 2.4 https://stackoverflow.com/questions/61154740/attributeerror-module-networkx-has-no-attribute-connected-component-subgraph
 
     logger.info(f"Connected components detected: {len(graphs)}")
 
@@ -138,7 +135,7 @@ def angel_mortal_arrange(player_list):
         logger.debug(f"Logging players:")
         for graph_player in G.nodes():
             logger.debug(f"{graph_player}")
-        
+
         # Draw this intermediate graph
         logger.info(f"Number of nodes in graph: {G.number_of_nodes()}")
         if DISPLAY_GRAPH:
@@ -154,17 +151,20 @@ def angel_mortal_arrange(player_list):
         # Pick any full cycle to draw, or draw nothing if there are no full cycles
         full_cycle = get_one_full_cycle(full_cycles)
         '''
-        full_cycle = hamilton(G) #get_one_full_cycle_from_graph(G)
-        #full_cycle = get_hamiltonian_path_from_graph(G)
+        full_cycle = hamilton(G)  # get_one_full_cycle_from_graph(G)
+        # full_cycle = get_hamiltonian_path_from_graph(G)
         # Draw the full cycle if it exists
-        if full_cycle is not None and (G.number_of_nodes() >= (MINIMUM_MATCHED_PLAYERS_BEFORE_CSVOUTPUT * len(player_list))): #do not print CSV if number of nodes is < 80% of participants
+        if full_cycle is not None and (G.number_of_nodes() >= (MINIMUM_MATCHED_PLAYERS_BEFORE_CSVOUTPUT * len(
+                player_list))):  # do not print CSV if number of nodes is < 80% of participants
             G_with_full_cycle = convert_full_cycle_to_graph(full_cycle)
             draw_graph(G_with_full_cycle)
             list_of_player_chains.append(full_cycle)
             # find out which nodes were missing
-            players_not_in_csv = set(player_list)-set(list(G.nodes()))
-            logger.info(f"Found a full cycle! CSV has been printed. However, the following players {players_not_in_csv} are not inside. Please match them manually.")
+            players_not_in_csv = set(player_list) - set(list(G.nodes()))
+            logger.info(
+                f"Found a full cycle! CSV has been printed. However, the following players {players_not_in_csv} are not inside. Please match them manually.")
         else:
-            logger.info(f"There is no full cycle - sorry! This means that the current set of players cannot form a perfect chain given the arrange requirements. No CSV printed.")
+            logger.info(
+                f"There is no full cycle - sorry! This means that the current set of players cannot form a perfect chain given the arrange requirements. No CSV printed.")
 
     return list_of_player_chains

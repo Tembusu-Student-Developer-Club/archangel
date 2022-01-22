@@ -98,6 +98,11 @@ def convert_to_player(row):
         logger.error(err_msg)
         print("Error: " + err_msg)
         exit()
+    except yaml.YAMLError as e:
+        err_msg = f"Invalid yml config file: \n {e}: "
+        logger.error(err_msg)
+        print("Error: " + err_msg)
+        exit()
     except KeyError as e:
         err_msg = f"Exception {e}: Key in player_attribute_index of config.yml should not be changed. Key used here " \
                   f"should match those in the config.yml dictionary. "

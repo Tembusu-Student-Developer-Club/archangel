@@ -86,7 +86,6 @@ def convert_to_player(row):
         two_truths_one_lie = row[index_dict["two_truths_one_lie"]].strip()
         introduction = row[index_dict["introduction"]].strip()
         house_number = row[index_dict["house_number"]].strip().lower()
-        cg_number = row[index_dict["cg_number"]].strip().lower()
         year_of_study = row[index_dict["year_of_study"]].strip().lower()
         faculty = row[index_dict["faculty"]].strip().lower()
         likes = row[index_dict["likes"]].strip().lower()
@@ -124,7 +123,6 @@ def convert_to_player(row):
                   twotruthsonelie=two_truths_one_lie,
                   introduction=introduction,
                   housenumber=house_number,
-                  cgnumber=cg_number,
                   yearofstudy=year_of_study,
                   faculty=faculty,
                   likes=likes,

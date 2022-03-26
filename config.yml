@@ -9,9 +9,8 @@ player_attribute_index:
   two_truths_one_lie: 5
   introduction: 6
   house_number: 7
-  cg_number: 8
-  year_of_study: 9
-  faculty: 10
-  likes: 11
-  dislikes: 12
-  comments: 13
+  year_of_study: 8
+  faculty: 9
+  likes: 10
+  dislikes: 11
+  comments: 12
